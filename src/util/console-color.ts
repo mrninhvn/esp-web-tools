@@ -27,7 +27,8 @@ export class ColoredConsole {
     return this.targetElement.innerText;
   }
 
-  addLine(line: string) {
+  addLine(line: string, isEnd: boolean = false, isFailed : boolean = false) {
+
     const re = /(?:\033|\\033)(?:\[(.*?)[@-~]|\].*?(?:\007|\033\\))/g;
     let i = 0;
 
@@ -44,7 +45,7 @@ export class ColoredConsole {
     }
 
     const lineSpan = document.createElement("span");
-    lineSpan.classList.add("line");
+    lineSpan.classList.add("line"); 
     this.targetElement.appendChild(lineSpan);
 
     const addSpan = (content: string) => {
@@ -69,8 +70,17 @@ export class ColoredConsole {
         redacted.appendChild(document.createTextNode("[redacted]"));
         lineSpan.appendChild(redacted);
       }
-    };
-
+    }; 
+    // DAT  
+    if(line.includes("invalid header")){
+      lineSpan.classList.add("bg-failed"); 
+      addSpan("FAIL !!! - ");
+    } 
+              
+    if(line.includes("RGRDWL0401010001") ){
+      lineSpan.classList.add("bg-success");
+      addSpan("Success - ");
+    }
     while (true) {
       const match = re.exec(line);
       if (match === null) break;
@@ -180,7 +190,7 @@ export class ColoredConsole {
     }
     const atBottom =
       this.targetElement.scrollTop >
-      this.targetElement.scrollHeight - this.targetElement.offsetHeight - 50;
+      this.targetElement.scrollHeight - this.targetElement.offsetHeight - 200;
 
     addSpan(line.substring(i));
 
@@ -206,7 +216,24 @@ export const coloredConsoleStyles = `
     overflow-wrap: break-word;
     color: #ddd;
   }
-
+  .bg-success {
+    padding: 20px;
+    background: green;
+    font-weight: bold; 
+    font-size: 20px;
+    display: flex;
+    margin-top: 20px;
+    justify-content:center;
+  }
+  .bg-failed {  
+    padding: 20px;
+    background: red;
+    font-weight: bold;
+    font-size: 20px;
+    display: flex;
+    margin-top: 20px;
+    justify-content:center;
+  }
   .log-bold {
     font-weight: bold;
   }

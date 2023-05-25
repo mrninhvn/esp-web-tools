@@ -639,20 +639,22 @@ export class EwtInstallDialog extends LitElement {
     } else if (this._installState.state === FlashStateType.FINISHED) {
       heading = undefined;
       const supportsImprov = this._client !== null;
-      content = html`
-        <ewt-page-message
-          .icon=${OK_ICON}
-          label="Installation complete!"
-        ></ewt-page-message>
-        <ewt-button
-          slot="primaryAction"
-          label="Next"
-          @click=${() => {
-            this._state =
-              supportsImprov && this._installErase ? "PROVISION" : "DASHBOARD";
-          }}
-        ></ewt-button>
-      `;
+      // content = html`
+      //   <ewt-page-message
+      //     .icon=${OK_ICON}
+      //     label="Installation complete!"
+      //   ></ewt-page-message>
+      //   <ewt-button
+      //     slot="primaryAction"
+      //     label="Next"
+      //     @click=${() => {
+      //       this._state =
+      //         supportsImprov && this._installErase ? "PROVISION" : "LOGS";
+      //     }}
+      //   ></ewt-button>
+      // `;
+      // Ninh.D.H 25.05.2023
+      this._state = "LOGS";
     } else if (this._installState.state === FlashStateType.ERROR) {
       heading = "Installation failed";
       content = html`
@@ -678,10 +680,52 @@ export class EwtInstallDialog extends LitElement {
     let content: TemplateResult;
     let hideActions = false;
 
+    // content = html`
+    //   <ewt-console .port=${this.port} .logger=${this.logger}></ewt-console>
+    //   <ewt-button
+    //     slot="primaryAction"
+    //     label="Back"
+    //     @click=${async () => {
+    //       await this.shadowRoot!.querySelector("ewt-console")!.disconnect();
+    //       this._state = "DASHBOARD";
+    //       this._initialize();
+    //     }}
+    //   ></ewt-button>
+    //   <ewt-button
+    //     slot="secondaryAction"
+    //     label="Download Logs"
+    //     @click=${() => {
+    //       textDownload(
+    //         this.shadowRoot!.querySelector("ewt-console")!.logs(),
+    //         `esp-web-tools-logs.txt`
+    //       );
+
+    //       this.shadowRoot!.querySelector("ewt-console")!.reset();
+    //     }}
+    //   ></ewt-button>
+    //   <ewt-button
+    //     slot="secondaryAction"
+    //     label="Reset Device"
+    //     @click=${async () => {
+    //       await this.shadowRoot!.querySelector("ewt-console")!.reset();
+    //     }}
+    //   ></ewt-button>
+    // `;
+
+    // Ninh.D.H 25.05.2023
     content = html`
       <ewt-console .port=${this.port} .logger=${this.logger}></ewt-console>
       <ewt-button
         slot="primaryAction"
+        label="INSTALL ANOTHER"
+        @click=${async () => {
+          await this.shadowRoot!.querySelector("ewt-console")!.disconnect();
+          this._state = "INSTALL";
+          this._initialize();
+        }}
+      ></ewt-button>
+      <ewt-button
+        slot="secondaryAction"
         label="Back"
         @click=${async () => {
           await this.shadowRoot!.querySelector("ewt-console")!.disconnect();
@@ -834,12 +878,15 @@ export class EwtInstallDialog extends LitElement {
     try {
       // If a device was just installed, give new firmware 10 seconds (overridable) to
       // format the rest of the flash and do other stuff.
-      const timeout = !justInstalled
-        ? 1000
-        : this._manifest.new_install_improv_wait_time !== undefined
-        ? this._manifest.new_install_improv_wait_time * 1000
-        : 10000;
-      this._info = await client.initialize(timeout);
+      // const timeout = !justInstalled
+      //   ? 1000
+      //   : this._manifest.new_install_improv_wait_time !== undefined
+      //   ? this._manifest.new_install_improv_wait_time * 1000
+      //   : 10000;
+      // this._info = await client.initialize(timeout);
+      // this._client = client;
+      // Ninh.D.H 25.05.2023
+      throw new PortNotReady()
       this._client = client;
       client.addEventListener("disconnect", this._handleDisconnect);
     } catch (err: any) {
@@ -849,6 +896,8 @@ export class EwtInstallDialog extends LitElement {
         this._state = "ERROR";
         this._error =
           "Serial port is not ready. Close any other application using it and try again.";
+        this._client = client;
+        client.addEventListener("disconnect", this._handleDisconnect);
       } else {
         this._client = null; // not supported
         this.logger.error("Improv initialization failed.", err);

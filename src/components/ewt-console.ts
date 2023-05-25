@@ -97,8 +97,16 @@ export class EwtConsole extends HTMLElement {
         .pipeThrough(new TransformStream(new LineBreakTransformer()))
         .pipeTo(
           new WritableStream({
-            write: (chunk) => {
-              this._console!.addLine(chunk.replace("\r", ""));
+            write: async (chunk) => {
+              // DAT 
+              const line = chunk.replace("\r", "") 
+
+              this._console!.addLine("");
+              this._console!.addLine(line);
+              // if(line.includes("invalid header")){ 
+              //   await this.disconnect()
+              //  } 
+              
             },
           })
         );
