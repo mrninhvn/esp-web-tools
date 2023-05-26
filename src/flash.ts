@@ -1,4 +1,6 @@
-import { Transport, ESPLoader } from "esptool-js";
+import { Transport, ESPLoader, IEspLoaderTerminal } from "esptool-js";
+import { ROM } from "esptool-js/lib/targets/rom";
+import { ESP32C3ROM } from "esptool-js/lib/targets/esp32c3";
 import {
   Build,
   FlashError,
@@ -17,7 +19,21 @@ const resetTransport = async (transport: Transport) => {
     dataTerminalReady: false,
     requestToSend: false,
   });
-};
+}; 
+export class ESPLoaderNew extends ESPLoader {
+  chipNew: ESP32C3ROM = new ESP32C3ROM();
+  constructor(transport: Transport, baudrate: any, terminal: IEspLoaderTerminal | undefined){
+    super(transport, baudrate,terminal)
+    this.chip = this.chipNew
+  }
+
+  public override async main_fn(mode?: string | undefined): Promise<any> {
+    // this.chipNew.CHIP_NAME = "ESP32-C3";
+    // this.chipNew.BOOTLOADER_FLASH_OFFSET = 0;
+    return this.chipNew;
+    // return "ESP32-C3";
+  }
+}
 
 export const flash = async (
   onEvent: (state: FlashState) => void,
@@ -38,7 +54,8 @@ export const flash = async (
     });
 
   const transport = new Transport(port);
-  const esploader = new ESPLoader(transport, 115200, undefined);
+  // const esploader = new ESPLoader(transport, 115200, undefined);
+  const esploader = new ESPLoaderNew(transport, 115200, undefined);
 
   // For debugging
   (window as any).esploader = esploader;
@@ -51,7 +68,7 @@ export const flash = async (
 
   try {
     await esploader.main_fn();
-    await esploader.flash_id();
+    // await esploader.flash_id();
   } catch (err: any) {
     console.error(err);
     fireStateEvent({
@@ -65,21 +82,23 @@ export const flash = async (
     return;
   }
 
-  chipFamily = esploader.chip.CHIP_NAME as any;
+  // console.log("chipName", esploader.chipNew)
+  chipFamily = esploader.chipNew.CHIP_NAME as any;
+  // chipFamily = esploader.chip.CHIP_NAME as any;
 
-  if (!esploader.chip.ROM_TEXT) {
-    fireStateEvent({
-      state: FlashStateType.ERROR,
-      message: `Chip ${chipFamily} is not supported`,
-      details: {
-        error: FlashError.NOT_SUPPORTED,
-        details: `Chip ${chipFamily} is not supported`,
-      },
-    });
-    await resetTransport(transport);
-    await transport.disconnect();
-    return;
-  }
+  // if (!esploader.chip.ROM_TEXT) {
+  //   fireStateEvent({
+  //     state: FlashStateType.ERROR,
+  //     message: `Chip ${chipFamily} is not supported`,
+  //     details: {
+  //       error: FlashError.NOT_SUPPORTED,
+  //       details: `Chip ${chipFamily} is not supported`,
+  //     },
+  //   });
+  //   await resetTransport(transport);
+  //   await transport.disconnect();
+  //   return;
+  // }
 
   fireStateEvent({
     state: FlashStateType.INITIALIZING,
