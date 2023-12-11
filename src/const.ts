@@ -20,6 +20,12 @@ export interface Manifest {
   /** @deprecated use `new_install_prompt_erase` instead */
   new_install_skip_erase?: boolean;
   new_install_prompt_erase?: boolean;
+  /* Flash info */
+  flash_size?: string;
+  flash_mode?: string;
+  flash_freq?: string;
+  encrypt_bin?: boolean;
+  new_install_speed?: number;
   /* Time to wait to detect Improv Wi-Fi. Set to 0 to disable. */
   new_install_improv_wait_time?: number;
   builds: Build[];

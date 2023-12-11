@@ -77,7 +77,7 @@ export class ColoredConsole {
       addSpan("FAIL !!! - ");
     } 
               
-    if(line.includes("RGRDWL0401010001") ){
+    if(line.includes("RAPLWL0401010001") ){
       lineSpan.classList.add("bg-success");
       addSpan("Success - ");
     }

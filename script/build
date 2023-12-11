@@ -1,11 +1,19 @@
 # Stop on errors
 set -e
 
-cd "$(dirname "$0")/.."
-echo 'export const version =' `jq .version package.json`";" > src/version.ts
+cd /home/ninh/apps/rogo.com.vn/flasher/esp-web-tools/src/esptool-js/
+# pwd
+npm run build
 
+cd /home/ninh/apps/rogo.com.vn/flasher/esp-web-tools
+echo 'export const version =' `jq .version package.json`";" > src/version.ts
 rm -rf dist
 NODE_ENV=production npm exec -- tsc
 NODE_ENV=production npm exec -- rollup -c
-rm -rf ../dist
-mv dist ../dist 
+# pwd
+# ls
+
+rm -rf /home/ninh/apps/rogo.com.vn/flasher/dist/
+cp -R dist/ /home/ninh/apps/rogo.com.vn/flasher/dist/
+cp -R /home/ninh/apps/rogo.com.vn/flasher/esp-web-tools/src/esptool-js/lib /home/ninh/apps/rogo.com.vn/flasher/dist/
+rm -rf /home/ninh/apps/rogo.com.vn/flasher/esp-web-tools/dist 

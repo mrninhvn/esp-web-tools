@@ -34,7 +34,7 @@ import { dialogStyles } from "./styles";
 import { version } from "./version";
 
 console.log(
-  `ESP Web Tools ${version} by Nabu Casa; https://esphome.github.io/esp-web-tools/`
+  `ESP Web Tools ${version} by Hai-Ninh Dang; https://rogo.com.vn/`
 );
 
 const ERROR_ICON = "⚠️";
@@ -194,8 +194,8 @@ export class EwtInstallDialog extends LitElement {
                   @click=${() => {
                     if (this._isSameFirmware) {
                       this._startInstall(false);
-                    } else if (this._manifest.new_install_prompt_erase) {
-                      this._state = "ASK_ERASE";
+                    // } else if (this._manifest.new_install_prompt_erase) {
+                    //   this._state = "ASK_ERASE";
                     } else {
                       this._startInstall(true);
                     }
@@ -301,10 +301,11 @@ export class EwtInstallDialog extends LitElement {
         <div>
           <ewt-button
             text-left
-            .label=${`Install ${this._manifest.name}`}
+            .label=${`CÀI ĐẶT ${this._manifest.name}`}
             @click=${() => {
               if (this._manifest.new_install_prompt_erase) {
-                this._state = "ASK_ERASE";
+                this._startInstall(false);
+                // this._state = "ASK_ERASE";
               } else {
                 // Default is to erase a device that does not support Improv Serial
                 this._startInstall(true);
@@ -315,7 +316,7 @@ export class EwtInstallDialog extends LitElement {
 
         <div>
           <ewt-button
-            label="Logs & Console"
+            label="Logs"
             @click=${async () => {
               // Also set `null` back to undefined.
               this._client = undefined;
@@ -573,19 +574,19 @@ export class EwtInstallDialog extends LitElement {
           ? html`Your device is running
               ${this._info!.firmware}&nbsp;${this._info!.version}.<br /><br />`
           : ""}
-        Do you want to ${action}
+        Xác nhận ${action}
         ${this._manifest.name}&nbsp;${this._manifest.version}?
         ${this._installErase
-          ? html`<br /><br />All data on the device will be erased.`
+          ? html`<br /><br />Không sử dụng cho thiết bị đã được nạp trước đó.`
           : ""}
         <ewt-button
           slot="primaryAction"
-          label="Install"
+          label="CÀI ĐẶT"
           @click=${this._confirmInstall}
         ></ewt-button>
         <ewt-button
           slot="secondaryAction"
-          label="Back"
+          label="QUAY LẠI"
           @click=${() => {
             this._state = "DASHBOARD";
           }}
@@ -717,7 +718,7 @@ export class EwtInstallDialog extends LitElement {
       <ewt-console .port=${this.port} .logger=${this.logger}></ewt-console>
       <ewt-button
         slot="primaryAction"
-        label="INSTALL ANOTHER"
+        label="CÀI ĐẶT TIẾP"
         @click=${async () => {
           await this.shadowRoot!.querySelector("ewt-console")!.disconnect();
           this._state = "INSTALL";
@@ -726,7 +727,7 @@ export class EwtInstallDialog extends LitElement {
       ></ewt-button>
       <ewt-button
         slot="secondaryAction"
-        label="Back"
+        label="QUAY LẠI"
         @click=${async () => {
           await this.shadowRoot!.querySelector("ewt-console")!.disconnect();
           this._state = "DASHBOARD";
@@ -743,13 +744,6 @@ export class EwtInstallDialog extends LitElement {
           );
 
           this.shadowRoot!.querySelector("ewt-console")!.reset();
-        }}
-      ></ewt-button>
-      <ewt-button
-        slot="secondaryAction"
-        label="Reset Device"
-        @click=${async () => {
-          await this.shadowRoot!.querySelector("ewt-console")!.reset();
         }}
       ></ewt-button>
     `;

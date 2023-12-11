@@ -101,7 +101,9 @@ export class InstallButton extends HTMLElement {
 
     slot.name = "activate";
     const button = document.createElement("button");
-    button.innerText = "CONNECT";
+    // button.innerText = "CONNECT";
+    // Ninh.D.H 29.05.2023
+    button.innerText = "KẾT NỐI";
     slot.append(button);
     if (
       "adoptedStyleSheets" in Document.prototype &&
