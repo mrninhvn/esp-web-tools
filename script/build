@@ -7,3 +7,6 @@ echo 'export const version =' `jq .version package.json`";" > src/version.ts
 rm -rf dist
 NODE_ENV=production npm exec -- tsc
 NODE_ENV=production npm exec -- rollup -c
+
+rm -rf /home/ninh/Datas/Rogo/WiLe-Flasher-Test/flasher/dist
+cp -R dist/ /home/ninh/Datas/Rogo/WiLe-Flasher-Test/flasher/dist
